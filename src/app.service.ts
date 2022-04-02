@@ -14,12 +14,12 @@ export class AppService {
 
   async saveRecord(input: Omit<IRecord, "id">): Promise<IRecord> {
      const list = await this.recordsService.getRecordsList();
-     const id = list.length > 0 ? ++list.sort((a,b) => (a.id > b.id) ? 1 : ((b.id > a.id) ? -1 : 0)).shift().id : 1;
+     let id = list.length > 0 ? list.slice().sort((a,b) => (a.id < b.id) ? 1 : ((b.id < a.id) ? -1 : 0)).shift().id : 0;
      const record = {
        username: input.username,
-       id,
+       id: ++id,
      };
-     await this.recordsService.saveRecordsList([...list, record]);
+     await this.recordsService.saveRecordsList([...list.concat(record)]);
      return Promise.resolve(record);
   }
 
